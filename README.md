@@ -1,82 +1,80 @@
-# OnErr Callback Wrapper Library
+# Quick Repl
 
-OnErr callback wrapper library contains a few convenience functions to reduce the number of checks needed to propagate errors up the callback chain.  The library simplifies code in coffeescript due to implied function calls, but can work in javascript too.
+An extension of the node repl that includes automatic history loading and saving, plus a callback logger and utility.  Useful for debugging an asynchronous node server or app.
 
-## Functions
+On load, it will attempt to load the history file which can be retrieved through the arrow keys.  On exit, it will automatically save the history back to the file.
 
-### onErr
+Other features include the 'cb' placeholder that you can use in place of a callback (very similar to the one provided in compound.js (https://github.com/1602/compound).  It will output the values returned to it and make them available in the repl.
 
-Calls the 'next' function if error, otherwise continues with normal callback
+lodash is also automatically available in the repl as 'lo'.
 
-```coffeescript
-# will call 'next' if error, the other callback is ignored
-myFunction onErr next, (err, status) ->
-  # will get here if there is no error
-  ...
+## Install
+
+```shell
+npm install --save-dev quick-repl
 ```
 
-### onErrCall
+## Simple Example
 
-Calls the 'next' function if error, otherwise continues with normal callback.  The 'next' function is "baked in" with a closure. This verion is useful for http request hanlders.
+```javascript
+var quickRepl = require('quick-repl');
 
-```coffeescript
-httpReqHandler = (req, res, next) ->
-  onErrNext = onErrCall next
-  ...
-  # will call 'next' if error
-  myFunction onErrNext (err, status) ->
-    ...
+quickRepl.start(function(err, context) {
+  // check err
 
-    # will call 'next' if error
-    myFunction2 onErrNext (err, status) ->
-    ...
+  // add custom additions from your application to the context
+  context.foo = function() {
+    return 1;
+  }
+});
 
 ```
 
-### onCallbackApply
+This brings up the repl.
 
-Ignores the arguments given to the inner function and uses the passed in arguments for the callback (if no error)
+```javascript
 
-```coffeescript
+// repl history is loading from ./.repl-history
 
-# 'value' will be passed to callback and anything returned by myFunction will be dropped
-# unless an error is returned by myFunction
-value = "this will be passed to callback"
-myFunction onCallbackApply value, callback
+>> var bar = function(cb) { cb("hello", [1, 2, 3], {}); };
+undefined
+>> bar(cb)
+Callback called with 3 arguments:
+_0 = 'hello'
+_1 = [ 1, 2, 3 ]
+_2 = {}
 
-```
+undefined
+>> lo.isArray(_1)
+true
+>> foo()
+1
+>> .exit
 
-### onCallbackDo
-
-Ignores arguments given to the inner function and uses the no arguments for the callback (if no error)
-
-```coffeescript
-
-# nothing will be passed to callback and anything returned by myFunction will be dropped
-# unless an error is returned by myFunction
-myFunction onCallbackDo callback
-
-# can be useful at end of async lib calls
-async.parallel [
-  myFunction
-], onCallbackDo callback
+// repl history is saved to ./.repl-history
 
 ```
 
-### nullCallback
+### Options
 
-A callback that does nothing but logs an error if it exists
+Quick repl takes the following options:
 
-```coffeescript
+```javascript
 
-# sending email in background
-sendMail email, nullCallback
+// the options defaults
+var opts = {
+  historyFile: "./.repl-history", // name of history file to write to and read from
+  prompt: ">> ",                  // prompt to use in the repl
+  maxCb: 10,                      // maxmium number of arguments 'cb' will save in _$n properties
+  verbose: true,                  // use util.inspect instead of toString for cb logging
+  depth: 2                        // util.inspect depth option
+};
+
+quickRepl.start(opts, function(err, context) {
+  //...
+});
 
 ```
-
-### setGlobal
-
-Sets all above functions to the global scope
 
 ## License
 

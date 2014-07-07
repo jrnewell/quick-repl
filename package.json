@@ -1,22 +1,22 @@
 {
-  "name": "console-history",
+  "name": "quick-repl",
   "version": "0.0.1",
-  "description": "An extension of the node repl that includes history and callback logger and utility",
+  "description": "An extension of the node repl that includes history and a callback logger and utility",
   "main": "./lib/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jrnewell/console-history.git"
+    "url": "git://github.com/jrnewell/quick-repl.git"
   },
   "dependencies" : {
     "lodash": "*"
   }
   "keywords": [
-    "repl", "console", "history", "callback"
+    "repl", "console", "history", "callback", "utility"
   ],
   "author": "James Newell <james.newell@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jrnewell/console-history/issues"
+    "url": "https://github.com/jrnewell/quick-repl/issues"
   },
   "engines": {
     "node": ">=0.8",
