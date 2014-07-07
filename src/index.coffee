@@ -9,7 +9,6 @@ start = (opts, callback) ->
   repl = require("repl").start(opts.prompt ? ">> ")
   maxCb = opts.maxCb ? 10
   verbose = opts.verbose ? true
-  ctx = null
   inspectOpts =
     depth: opts.depth ? 2
     colors: true
@@ -18,20 +17,22 @@ start = (opts, callback) ->
     fs.writeFile replHistory, (repl.rli.history.reverse().join('\n') + '\n'), callback
 
   loadHistory = (callback) ->
-    if fs.existsSync(replHistory)
-      try
-        data = fs.readFileSync replHistory, 'utf8'
-        lines = data.split '\n'
-        for line in lines
-          if (line)
-            repl.rli.line = line
-            repl.rli._addHistory()
-            repl.rli.line = ''
-            repl.lines.push line
-      catch ex
-        return callback(ex)
+    fs.exists replHistory, (exists) ->
+      return callback(null) unless exists
+      fs.readFile replHistory, encoding: 'utf8', (err, data) ->
+        return callback(err) if err
 
-    return callback(null)
+        try
+          lines = data.split '\n'
+          for line in lines
+            unless _.isEmpty(line)
+              repl.rli.line = line
+              repl.rli._addHistory()
+              repl.rli.line = ''
+              repl.lines.push line
+          return callback(null)
+        catch ex
+          return callback(ex)
 
   repl.on 'exit', () ->
     saveHistory (err) ->
@@ -45,8 +46,6 @@ start = (opts, callback) ->
       process.kill process.pid, 'SIGINT'
 
   ctx = repl.context
-
-  ctx.repl = repl
 
   ctx.lo = require 'lodash'
 
