@@ -1,0 +1,25 @@
+{
+  "name": "console-history",
+  "version": "0.0.1",
+  "description": "An extension of the node repl that includes history and callback logger and utility",
+  "main": "./lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jrnewell/console-history.git"
+  },
+  "dependencies" : {
+    "lodash": "*"
+  }
+  "keywords": [
+    "repl", "console", "history", "callback"
+  ],
+  "author": "James Newell <james.newell@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jrnewell/console-history/issues"
+  },
+  "engines": {
+    "node": ">=0.8",
+    "npm": ">=1.2.10"
+  }
+}
